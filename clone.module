@@ -1,0 +1,106 @@
+<?php
+
+/**
+ * @file
+ * Lets user send ("clone") pattern files to his drupal instance.
+ *
+ * A longer description will follow here.
+ */
+
+require_once 'includes/clone.form.inc';
+require_once 'includes/clone.rpc.inc';
+
+/**
+ * Implements hook_help().
+ */
+function clone_help($path, $arg) {
+  if ($path == 'admin/help#clone') {
+    return t('Help!'); // TODO: give useful help.
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function clone_menu() {
+  $items['admin/config/clone'] = array(
+    'title' => 'Clone',
+    'description' => 'Description of Clone',
+    'position' => 'right',
+    'weight' => -5,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+  $items['admin/config/clone/settings'] = array(
+    'title' => 'Clone settings',
+    'description' => 'Change how Clone behaves',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('clone_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'clone.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function clone_block_info() {
+  $blocks = array();
+  $blocks['show_clone_button'] = array(
+    'info' => t('Allow installation to be cloned'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['show_requests'] = array(
+    'info' => t('Shows open clone requests'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function clone_block_view($block_name = '') {
+  if ($block_name == 'show_clone_button') {
+    $form = drupal_get_form('clone_clone_form');
+    $block = array(
+      'subject' => t('Clone parts of this instance'),
+      'content' => $form,
+    );
+    return $block;
+  }
+  else if ($block_name == 'show_requests') {
+    $form = drupal_get_form('clone_request_form');
+    $block = array(
+      'subject' => t('Open requests'),
+      'content' => $form,
+    );
+    return $block;
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function clone_menu_alter(&$items) {
+  $items['admin/patterns/clone'] = array(
+    'title' => 'Clone',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('clone_clone_form'),
+    'access arguments' => array('administer patterns'),
+    'type' => MENU_LOCAL_TASK,
+	'weight' => 8,
+  );
+  $items['admin/patterns/rpc'] = array(
+    'title' => 'RPC',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('clone_request_form'),
+    'access arguments' => array('administer patterns'),
+    'type' => MENU_LOCAL_TASK,
+	'weight' => 9,
+  );
+}

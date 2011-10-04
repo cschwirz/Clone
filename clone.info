@@ -1,0 +1,9 @@
+name = Clone
+description = "A module to easily clone parts of a drupal instance using Patterns"
+package = Pro Drupal Development
+core = 7.x
+files[] = clone.module
+files[] = clone.install
+files[] = clone.admin.inc
+configure=admin/config/clone/settings
+dependencies[] = patterns

@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * Implements hook_install()
+ */
+function clone_install() {
+  watchdog('Clone', 'installing');
+  if (!db_table_exists('clone_requests')) {
+    drupal_install_schema('clone');
+    watchdog('Clone', 'table clone_requests created');
+  }
+}
+
+/**
+ * Implements hook_uninstall()
+ */
+function clone_uninstall() {
+  if (db_table_exists('clone_requests')) {
+    drupal_uninstall_schema('clone');
+    watchdog('Clone', 'table clone_requests dropped');
+  }
+  watchdog('Clone', 'uninstalling');
+}
+
+/**
+ * Implements hook_schema()
+ */
+function clone_schema() {
+  watchdog('Clone', 'schema');
+  $schema['clone_requests'] = array(
+    'description' => 'Stores clone requests.',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => 'true',
+        'not null' => TRUE,
+        'description' => 'primary identifier',
+      ),
+      'url' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'default' => '',
+        'description' => 'URL (of the drupal instance) the request has been sent from.',
+      ),
+      'ip' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'default' => '',
+        'description' => 'IP of the entity making the request.',
+      ),
+      'created' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Unix timestamp when request was made',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Name of the pattern.',
+      ),
+      'title' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Title of the pattern.',
+      ),
+      'version' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => FALSE,
+        'default' => NULL,
+        'description' => 'Version of the pattern.',
+      ),
+      'format' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'yaml',
+        'description' => 'Format of the pattern.',
+      ),
+      'content' => array(
+        'type' => 'blob',
+        'description' => 'Content of the pattern.',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  return $schema;
+}
+
