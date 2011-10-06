@@ -37,3 +37,4 @@ function clone_admin_settings_submit($form, &$form_state) {
   variable_set('clone_allow_cloning',
     $form_state['values']['clone_allow_clone']);
 }
+

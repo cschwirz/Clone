@@ -17,7 +17,7 @@ function xmls_clone_addrequest($url, $ip, $patterns) {
     watchdog('Clone', 'xmls_clone_addrequest ' . $ip);
   }
   if (!$url) {
-    return xmlrpc_error(1, t('error adding url to the list'));
+    return xmlrpc_error(1, t('error adding url to the list. Specify an URL in the configuration'));
   }
   if (variable_get('clone_allow_clone', FALSE)) {
     foreach ($patterns as $pattern) {
